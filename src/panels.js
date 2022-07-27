@@ -1,6 +1,7 @@
 const axios = require("axios").default;
 
 export default (editor, opts = {}) => {
+    console.log(opts);
     const pn = editor.Panels;        
     const cmd = editor.Commands;
     const config = editor.getConfig(); 
@@ -101,13 +102,21 @@ export default (editor, opts = {}) => {
             //         </body>
             //     </html>
             // `;  
-            var data = JSON.stringify({
+            var req = {
                 "headerScript": headerScript,
                 "bodyContent": JSON.stringify(editor.getProjectData())
-              });            
+            };
+            if(opts.action === "edit"){
+                req.id = opts.id;
+            }
+            var data = JSON.stringify(req);    
+            let url = 'http://127.0.0.1:3000/api/landingpage/create';
+            if(opts.action === "edit"){
+                url = 'http://127.0.0.1:3000/api/landingpage/update';
+            }
             var config = {
                 method: 'post',
-                url: 'http://127.0.0.1:3000/api/landingpage/create',
+                url: url,
                 headers: { 
                     'Content-Type': 'application/json'
                 },
