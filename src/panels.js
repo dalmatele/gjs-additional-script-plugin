@@ -1,7 +1,6 @@
 const axios = require("axios").default;
 
 export default (editor, opts = {}) => {
-    console.log(opts);
     const pn = editor.Panels;        
     const cmd = editor.Commands;
     const config = editor.getConfig(); 
@@ -89,19 +88,6 @@ export default (editor, opts = {}) => {
         run(editor, sender){
             headerScript = headerEditor ? headerEditor.getContent() : "";          
             bodyScript = bodyEditor ? bodyEditor.getContent() : "";
-            // let saveTemplate = `
-            //     <!doctype html>
-            //     <html>
-            //         <head>
-            //             <meta charset="utf-8>
-            //             ${headerScript}
-            //         </head>
-            //         <body>
-            //             ${editor.getHtml()}
-            //             ${bodyScript}
-            //         </body>
-            //     </html>
-            // `;  
             var req = {
                 "headerScript": headerScript,
                 "bodyContent": JSON.stringify(editor.getProjectData())
@@ -132,6 +118,62 @@ export default (editor, opts = {}) => {
             });
         }
     });
+    cmd.add("publishLandingPage", {
+        //save before publishing
+        run(editor, sender){
+            // editor.runCommand("saveLandingPage");
+            //display domain popup
+            $("<div></div>").dialog({
+                modal: true,
+                title: "Choose a domain",
+                create: function(event, ui){
+                    var widget = $(this).dialog("widget");
+                    $(".ui-dialog-title-bar-close span", widget).removeClass("ui-icon-closethick")
+                    .append('<i class="fa fa-window-close-o" aria-hidden="true"></i>');
+                },
+                open: function(){                    
+                    let content = `
+                        <select id="combobox">
+                            <option value>Select one...</option>
+                            <option value="ActionScript">ActionScript</option>
+                            <option value="AppleScript">AppleScript</option>
+                            <option value="Asp">Asp</option>
+                            <option value="BASIC">BASIC</option>
+                            <option value="C">C</option>
+                            <option value="C++">C++</option>
+                            <option value="Clojure">Clojure</option>
+                            <option value="COBOL">COBOL</option>
+                            <option value="ColdFusion">ColdFusion</option>
+                            <option value="Erlang">Erlang</option>
+                            <option value="Fortran">Fortran</option>
+                            <option value="Groovy">Groovy</option>
+                            <option value="Haskell">Haskell</option>
+                            <option value="Java">Java</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="Lisp">Lisp</option>
+                            <option value="Perl">Perl</option>
+                            <option value="PHP">PHP</option>
+                            <option value="Python">Python</option>
+                            <option value="Ruby">Ruby</option>
+                            <option value="Scala">Scala</option>
+                            <option value="Scheme">Scheme</option>
+                        </select>                        
+                    `;
+                    $(this).html(content);
+                    $("#combobox").combobox();
+                },
+                buttons: {
+                    Ok: function(){
+                        $("#combobox").remove();
+                        $(this).dialog("close");
+                    }
+                },
+                close: function(event, ui){
+                    $("#combobox").remove();
+                }
+            });
+        }
+    });
     //add to the top panel, in "options" component
     pn.addButton("options", {
         id: "gjs-header",
@@ -156,11 +198,19 @@ export default (editor, opts = {}) => {
         };      
     });
     pn.addButton("options", {
-        id: "gjs-save",
+        id: "gjs-publish",
         className: "fa fa-cloud-upload",
+        attributes: {
+            title: "Publish"
+        },
+        command: "publishLandingPage"
+    });
+    pn.addButton("options", {
+        id: "gjs-save",
+        className: "fa fa-floppy-o",
         attributes: {
             title: "Save"
         },
         command: "saveLandingPage"
-    });
+    })
   }

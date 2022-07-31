@@ -1,6 +1,6 @@
 {
   "name": "gjs-additional-script-plugin",
-  "version": "1.0.5",
+  "version": "1.0.17",
   "description": "gjs-additional-script-plugin",
   "main": "dist/index.js",
   "repository": {
